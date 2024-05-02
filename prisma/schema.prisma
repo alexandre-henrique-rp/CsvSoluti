@@ -1,0 +1,534 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model AGRV {
+  idagrv          Int       @id @default(autoincrement())
+  nome            String?   @db.VarChar(100)
+  cpf             String?   @db.VarChar(20)
+  nascimento      DateTime? @db.Date
+  rg              String?   @db.VarChar(20)
+  linkcnh         String?   @db.VarChar(150)
+  linkfotoperfil  String?   @db.VarChar(150)
+  logradouro      String?   @db.VarChar(150)
+  numero          String?   @db.VarChar(150)
+  complemento     String?   @db.VarChar(150)
+  cep             String?   @db.VarChar(150)
+  municipio       String?   @db.VarChar(150)
+  codmunicipio    String?   @db.VarChar(150)
+  uf              String?   @db.VarChar(150)
+  whatsapp        String?   @db.VarChar(150)
+  celular         String?   @db.VarChar(150)
+  fixo            String?   @db.VarChar(150)
+  email           String?   @db.VarChar(150)
+  email2          String?   @db.VarChar(150)
+  permissaoacesso String?   @db.VarChar(150)
+  senha           String?   @db.VarChar(150)
+  chavepix        String?   @db.VarChar(150)
+  nomebanco       String?   @db.VarChar(150)
+  numerobanco     String?   @db.VarChar(150)
+  numeroagencia   String?   @db.VarChar(150)
+  numeroconta     String?   @db.VarChar(150)
+  tipocontabanco  String?   @db.VarChar(150)
+  nomepolo        String?   @db.VarChar(150)
+  numeropolo      Int?
+  linklogopolo    String?   @db.VarChar(150)
+  municipiopolo   String?   @db.VarChar(150)
+  ufpolo          String?   @db.VarChar(150)
+  a1pj_12m        Int?
+  a3pj_36m        Int?
+  a1pf_12m        Int?
+  a3pf_36m        Int?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime?
+  tipopix         String?   @db.VarChar(150)
+  bairro          String?   @db.VarChar(150)
+  painel_agrv     Int?
+  obs             String?   @db.VarChar(150)
+}
+
+model UNICA {
+  c_unico     Int    @id @default(autoincrement())
+  data        String @db.VarChar(11)
+  hora        String @db.VarChar(11)
+  tipocd      String @db.VarChar(150)
+  referencia  String @db.VarChar(20)
+  unidade     String @db.VarChar(20)
+  nome        String @db.VarChar(200)
+  cpf         String @db.VarChar(20)
+  razaosocial String @db.VarChar(200)
+  cnpj        String @db.VarChar(20)
+  email       String @db.VarChar(200)
+  cidade      String @db.VarChar(50)
+
+  @@index([c_unico], map: "c_unico")
+}
+
+model accounts {
+  id                  String  @id @default("") @db.Char(36)
+  type                String  @db.VarChar(150)
+  provider            String  @db.VarChar(150)
+  provider_account_id String  @db.VarChar(150)
+  refresh_token       String? @db.VarChar(150)
+  access_token        String? @db.VarChar(150)
+  expires_at          Int?
+  token_type          String? @db.VarChar(150)
+  scope               String? @db.VarChar(150)
+  id_token            String? @db.VarChar(150)
+  session_state       String? @db.VarChar(150)
+  user_id             String? @db.Char(36)
+  users               users?  @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "accounts_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model arquivo {
+  id               Int      @id @default(autoincrement())
+  cpfcnpj          String   @db.VarChar(150)
+  novo_nome        String   @db.VarChar(150)
+  nomearquivo      String   @db.VarChar(150)
+  dtUParq          DateTime @db.Date
+  novo_nome_recibo String   @db.VarChar(150)
+  dtUPrec          DateTime @db.Date
+  vencimento       DateTime @db.Date
+  valor            String   @db.VarChar(150)
+}
+
+model blocodenotas {
+  id            Int    @id @default(autoincrement())
+  numeroDAlinha Int    @db.TinyInt
+  cor           String @db.VarChar(150)
+  atendimento   String @db.LongText
+  titulo        String @db.LongText
+  anotacoes     String @db.LongText
+}
+
+model boleto {
+  id             Int    @id @default(autoincrement()) @db.UnsignedInt
+  referencia     String @db.VarChar(150)
+  unidade        Int
+  idfcw          String @db.VarChar(150)
+  fouj           String @db.VarChar(150)
+  tipocd         String @db.VarChar(150)
+  vectoboleto    String @db.VarChar(150)
+  valorcd        String @db.VarChar(150)
+  cliente        String @db.VarChar(150)
+  cpfcnpj        String @db.VarChar(150)
+  email          String @db.VarChar(150)
+  endereco       String @db.VarChar(150)
+  nrua           String @db.VarChar(150)
+  bairro         String @db.VarChar(150)
+  cidade         String @db.VarChar(150)
+  uf             String @db.VarChar(150)
+  cep            String @db.VarChar(150)
+  nossonumero    String @db.VarChar(150)
+  linhadigitavel String @db.VarChar(150)
+  codigobarras   String @db.VarChar(150)
+  datahoje       String @db.VarChar(150)
+  remessa        String @db.VarChar(150)
+  baixa          String @db.VarChar(150)
+}
+
+model clientesNFE {
+  ID         Int       @id @default(autoincrement())
+  CPF        String?   @db.VarChar(150)
+  CNPJ       String?   @db.VarChar(150)
+  Cliente    String?   @db.VarChar(50)
+  RAZAO      String?   @db.VarChar(50)
+  Vencimento DateTime? @db.Date
+  Valor      Int?
+  LINK       String?   @db.VarChar(50)
+  TEL1       String?   @db.VarChar(150)
+  TEL2       String?   @db.VarChar(150)
+  STATUS     Int?
+  createdAt  DateTime  @db.DateTime(0)
+  updatedAt  DateTime  @db.DateTime(0)
+  email      String?   @db.VarChar(100)
+
+  @@index([ID], map: "clientesNFE_ID_IDX")
+}
+
+model cupons_desconto {
+  id                   Int      @id @default(autoincrement())
+  cupom                String   @db.VarChar(50)
+  porcentagem_desconto Float
+  ativo                Boolean
+  criado_em            DateTime @default(now()) @db.Timestamp(0)
+  atualizado_em        DateTime @default(now()) @db.Timestamp(0)
+}
+
+model erp {
+  id            Int       @id @unique(map: "erp_id_IDX") @default(autoincrement())
+  nome          String?   @db.VarChar(100)
+  fantasia      String?   @db.VarChar(100)
+  email         String?   @db.VarChar(100)
+  end           String?   @db.VarChar(100)
+  bairro        String?   @db.VarChar(100)
+  numero        Int?
+  cidade        String?   @db.VarChar(100)
+  pais          String?   @db.VarChar(100)
+  Ie            String?   @db.VarChar(100)
+  tel           String?   @db.VarChar(100)
+  whatsapp      String    @db.VarChar(100)
+  a1pf          Int
+  a3pf          Int?
+  a1pj          Int
+  a3pj          Int?
+  status        Int
+  regime        String?   @db.VarChar(100)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime?
+  cnpj          String?   @db.VarChar(100)
+  uf            String?   @db.VarChar(100)
+  simples       String?   @db.VarChar(100)
+  unidade       String?   @db.VarChar(100)
+  authorization String?   @db.VarChar(100)
+  repasse       Int?
+}
+
+model erp_log {
+  id           Int       @id @default(autoincrement())
+  user         String?   @db.VarChar(100)
+  createdAt    DateTime  @db.DateTime(0)
+  clienteId    Int?
+  clienteTel   String?   @db.VarChar(100)
+  clienteName  String?   @db.VarChar(100)
+  clienteValor String?   @db.VarChar(100)
+  updatedAt    DateTime? @db.DateTime(0)
+  error        String?   @db.VarChar(150)
+}
+
+model fcweb {
+  id                  Int          @id @default(autoincrement())
+  s_alerta            String?      @db.VarChar(150)
+  referencia          String?      @db.VarChar(150)
+  id_boleto           String?      @db.VarChar(150)
+  id_cancelar_bol_rem String?      @db.VarChar(150)
+  unidade             String?      @db.VarChar(150)
+  responsavel         String?      @db.VarChar(150)
+  criou_fc            String       @db.VarChar(150)
+  andamento           String?      @db.VarChar(150)
+  prioridade          String?      @db.VarChar(150)
+  solicitacao         String?      @db.VarChar(150)
+  venda               String?      @db.VarChar(150)
+  cpf                 String?      @db.VarChar(150)
+  cnpj                String?      @db.VarChar(150)
+  nome                String?      @db.VarChar(150)
+  razaosocial         String?      @db.VarChar(150)
+  vectoboleto         DateTime?    @db.Date
+  unico               String?      @db.VarChar(150)
+  contador            String?      @db.VarChar(150)
+  obscont             String?      @db.VarChar(150)
+  comissaoparceiro    Float?       @db.Float
+  scp                 String?      @db.VarChar(10)
+  tipocd              String?      @db.VarChar(150)
+  valorcd             String?      @db.VarChar(150)
+  custocd             String?      @db.VarChar(150)
+  custoCdpar          String?      @db.VarChar(150)
+  estatos_pgto        String?      @db.VarChar(150)
+  pgto_efi            String       @db.VarChar(100)
+  formapgto           String?      @db.VarChar(150)
+  vouchersoluti       String?      @db.VarChar(150)
+  ct_parcela          String?      @db.VarChar(150)
+  telefone            String?      @db.VarChar(150)
+  telefone2           String?      @db.VarChar(150)
+  email               String?      @db.VarChar(150)
+  dtnascimento        String?      @db.VarChar(150)
+  rg                  String?      @db.VarChar(150)
+  cei                 String?      @db.VarChar(150)
+  endereco            String?      @db.VarChar(150)
+  nrua                String?      @db.VarChar(150)
+  bairro              String?      @db.VarChar(150)
+  complemento         String?      @db.VarChar(150)
+  cep                 String?      @db.VarChar(150)
+  uf                  String?      @db.VarChar(150)
+  im                  Int
+  cidade              String?      @db.VarChar(150)
+  observacao          String?      @db.VarChar(150)
+  vctoCD              DateTime?    @db.Date
+  historico           String?      @db.Text
+  arquivo             String?      @db.VarChar(100)
+  nomearquivo         String?      @db.VarChar(100)
+  obsrenovacao        String?      @db.VarChar(150)
+  dt_aprovacao        DateTime?    @db.Date
+  comicao             Float?       @db.Float
+  validacao           String?      @db.VarChar(150)
+  nfe                 String?      @db.VarChar(150)
+  urlnota             String?      @db.Text
+  id_fcw_soluti       String?      @db.VarChar(11)
+  dt_agenda           DateTime?    @db.Date
+  hr_agenda           DateTime?    @db.Time(0)
+  obs_agenda          String?      @db.VarChar(150)
+  reg_cnh             String?      @db.VarChar(150)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime?
+  price_cert          price_cert[]
+
+  @@index([id], map: "id")
+}
+
+model leads {
+  id                 Int      @id @default(autoincrement())
+  nome               String   @db.VarChar(150)
+  telefone_1         String   @db.VarChar(20)
+  telefone_2         String?  @db.VarChar(20)
+  email              String   @db.VarChar(150)
+  cpf                String   @db.VarChar(30)
+  cnpj               String?  @db.VarChar(30)
+  data_nascimento    String   @db.VarChar(15)
+  razao_social       String?  @db.VarChar(150)
+  tipo_lead          String   @db.VarChar(30)
+  certificado        String   @db.VarChar(50)
+  cupom_desconto     String?  @db.VarChar(20)
+  valor              Decimal  @db.Decimal(10, 0)
+  valor_com_desconto Decimal? @db.Decimal(10, 0)
+  criado_em          DateTime @default(now()) @db.Timestamp(0)
+  atualizado_em      DateTime @default(now()) @db.Timestamp(0)
+}
+
+model log_error {
+  id        Int       @id @default(autoincrement())
+  ref       String?   @db.VarChar(100)
+  log       String?   @db.VarChar(100)
+  reg       DateTime? @default(now()) @db.Timestamp(0)
+  dia       String?   @db.VarChar(100)
+  titulo    String?   @db.VarChar(100)
+  email     String?   @db.VarChar(100)
+  doc       String?   @db.VarChar(100)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+  updatedAt DateTime  @db.DateTime(0)
+
+  @@index([id], map: "log_error_id_IDX")
+}
+
+model notanfe {
+  id                   Int       @id @default(autoincrement())
+  Cliente              String    @db.VarChar(100)
+  Fantasia             String    @db.VarChar(80)
+  LINK                 String    @db.VarChar(100)
+  WhatsApp             String    @db.VarChar(100)
+  WhatsApp2            String?   @db.VarChar(100)
+  TEL                  String?   @db.VarChar(100)
+  email                String    @db.VarChar(80)
+  razaosocial          String    @db.VarChar(80)
+  CNPJ                 String    @db.VarChar(30)
+  ie                   String    @db.VarChar(30)
+  ultimaNota           String    @db.VarChar(20)
+  VctoCertificado      DateTime? @db.Date
+  Valor                String?   @db.VarChar(20)
+  situacao             String    @db.VarChar(20)
+  plano                String    @db.VarChar(80)
+  dominio              String    @db.VarChar(80)
+  user_senha           String    @db.VarChar(20)
+  contador             String    @db.VarChar(80)
+  endereco             String    @db.VarChar(150)
+  data_inclusao        DateTime  @db.Date
+  data_inicio_cobranca DateTime  @db.Date
+}
+
+model notaservico {
+  id                  Int      @id @default(autoincrement())
+  data                DateTime @db.Date
+  referencia          String   @db.LongText
+  estatus             String   @db.LongText
+  idnf                String   @db.LongText
+  idfcw               String   @db.LongText
+  cliente             String   @db.LongText
+  cpfcnpj             String   @db.LongText
+  im                  String   @db.LongText
+  email               String   @db.LongText
+  cep                 String   @db.LongText
+  endereco            String   @db.LongText
+  numero              String   @db.LongText
+  bairro              String   @db.LongText
+  cidade              String   @db.LongText
+  uf                  String   @db.LongText
+  valor               String   @db.LongText
+  descricao           String   @db.LongText
+  numLote             Int?
+  codigomunicipio     String   @db.VarChar(150)
+  Protocolo           String?  @db.LongText
+  enderecoComplemento String?  @db.LongText
+  NumeroNfse          Int?
+  UrlVisualizacao     String?  @db.LongText
+  CodigoVerificacao   String?  @db.LongText
+}
+
+model parceiro {
+  codigo                Int       @id @default(autoincrement())
+  usuario               String?   @db.VarChar(150)
+  senha                 String?   @db.VarChar(150)
+  mensagem              String?   @db.VarChar(150)
+  unidade               String?   @db.VarChar(150)
+  nome                  String?   @db.VarChar(150)
+  fone                  String?   @db.VarChar(150)
+  email                 String?   @db.VarChar(150)
+  observacao            String?   @db.VarChar(150)
+  endereco              String?   @db.VarChar(150)
+  A1PJ_12               String?   @map("A1PJ-12") @db.VarChar(150)
+  A3PJ_12               String?   @map("A3PJ-12") @db.VarChar(150)
+  A3PJ_24               String?   @map("A3PJ-24") @db.VarChar(150)
+  A3PJ_36               String?   @map("A3PJ-36") @db.VarChar(150)
+  A1PF_12               String?   @map("A1PF-12") @db.VarChar(150)
+  A3PF_12               String?   @map("A3PF-12") @db.VarChar(150)
+  A3PF_24               String?   @map("A3PF-24") @db.VarChar(150)
+  A3PF_36               String?   @map("A3PF-36") @db.VarChar(150)
+  ocultar_valor_volcher String?   @db.VarChar(150)
+  tipo_comissao         String?   @db.VarChar(150)
+  whatsapp              String?   @db.VarChar(100)
+  createdAt             DateTime  @default(now()) @db.DateTime(0)
+  updatedAt             DateTime? @db.DateTime(0)
+  status                Int?      @default(1)
+  comicao               Int?      @default(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model price_cert {
+  Uuid          String    @id @unique
+  FcwebId       Int
+  Date_int      DateTime? @db.DateTime(0)
+  Status_pg     String    @db.VarChar(100)
+  Cliente_acess Boolean   @default(false)
+  Date_venc     DateTime? @db.Date
+  Parcelas      String?   @db.VarChar(3)
+  TxidPix       String?   @db.VarChar(150)
+  TxidBoleto    Int?
+  TxidCartao    String?   @db.VarChar(150)
+  QrLink        String?   @db.Text
+  QrBase64      String?   @db.Text
+  CreatePixDate DateTime? @db.DateTime(0)
+  PixStatus     String?   @db.VarChar(100)
+  PixCopiaECola String?   @db.VarChar(150)
+  BarCode       String?   @db.VarChar(180)
+  LinkBolix     String?   @db.Text
+  LinkBoleto    String?   @db.Text
+  LinkBoletoPdf String?   @db.Text
+  Card_Adm      String?   @db.VarChar(20)
+  payment_token String?   @db.Text
+  payment_url   String?   @db.Text
+  UrlPg         String?   @db.Text
+  createdAt     DateTime  @default(now()) @db.DateTime(0)
+  updatedAt     DateTime?
+  Boleto        Boolean?  @default(false)
+  Cartao        Boolean?  @default(false)
+  Pix           Boolean?  @default(false)
+  Date_pg       DateTime? @db.DateTime(0)
+  fcweb         fcweb     @relation(fields: [FcwebId], references: [id], onDelete: Cascade, map: "fcweb_ib")
+
+  @@index([FcwebId], map: "fcweb_ib")
+}
+
+model produtos {
+  id        Int       @id @unique(map: "produtos_id_IDX") @default(autoincrement())
+  title     String?   @db.VarChar(100)
+  value     String?   @db.VarChar(100)
+  descricao String?   @db.VarChar(150)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+  updatedAt DateTime? @db.DateTime(0)
+}
+
+model rembra {
+  id          Int    @id @default(autoincrement())
+  criado      String @db.VarChar(400)
+  transmitido String @db.VarChar(5)
+  linhaP      String @db.VarChar(400)
+  linhaQ      String @db.VarChar(400)
+}
+
+model sessions {
+  id            String   @id @default("") @db.Char(36)
+  expires       DateTime @db.DateTime(0)
+  session_token String   @unique(map: "sessionToken") @db.VarChar(150)
+  user_id       String?  @db.Char(36)
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "sessions_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model users {
+  id             String     @id @default("") @db.Char(36)
+  name           String?    @db.VarChar(150)
+  email          String?    @unique(map: "email") @db.VarChar(150)
+  email_verified DateTime?  @db.DateTime(0)
+  image          String?    @db.VarChar(150)
+  accounts       accounts[]
+  sessions       sessions[]
+}
+
+model usuariosGDC {
+  id      Int    @id @default(autoincrement())
+  chave   String @db.VarChar(150)
+  cpfcnpj String @db.VarChar(150)
+  nome    String @db.VarChar(150)
+}
+
+model usuariosfcw {
+  idagr               Int       @id @default(autoincrement())
+  usuario             String?   @db.VarChar(150)
+  senha               String?   @db.VarChar(150)
+  nome                String    @default("") @db.VarChar(150)
+  c_unidade           Int?      @default(1)
+  polo                String?   @db.VarChar(150)
+  bloc_filial         String?   @db.VarChar(150)
+  bloco_de_notas      String?   @db.VarChar(150)
+  bt_producao         String?   @db.VarChar(150)
+  bt_comissao         String?   @db.VarChar(150)
+  tabela_voucher      String?   @db.VarChar(150)
+  ver_t_custo         String?   @db.VarChar(150)
+  bloc_vl_comicao     String?   @db.VarChar(150)
+  bloquearINT         Int?
+  bt_ag_indica        String?   @db.VarChar(150)
+  bt_sol_boleto       String?   @db.VarChar(150)
+  bloc_bt_bol_fcw     String?   @db.VarChar(150)
+  bloc_bt_nfe_fcw     String?   @db.VarChar(150)
+  bloc_cont_obs       String?   @db.VarChar(150)
+  bt_financeiro       String?   @db.VarChar(150)
+  A1PF                String?   @db.VarChar(150)
+  A3PF_12             String?   @map("A3PF-12") @db.VarChar(150)
+  A3PF_24             String?   @map("A3PF-24") @db.VarChar(150)
+  A3PF                String?   @db.VarChar(150)
+  A3PF_HSM_1ano       String?   @map("A3PF-HSM-1ano") @db.VarChar(150)
+  A1PJ                String?   @db.VarChar(150)
+  A3PJ_12             String?   @map("A3PJ-12") @db.VarChar(150)
+  A3PJ_24             String?   @map("A3PJ-24") @db.VarChar(150)
+  A3PJ                String?   @db.VarChar(150)
+  A3PJ_HSM_1ano       String?   @map("A3PJ-HSM-1ano") @db.VarChar(150)
+  bloc_nuvem          String?   @db.VarChar(150)
+  verComissaoParceiro String?   @db.VarChar(150)
+  senha_has           String?   @db.VarChar(150)
+  createdAt           DateTime  @default(now()) @db.DateTime(0)
+  updatedAt           DateTime? @db.DateTime(0)
+  email               String?   @db.VarChar(100)
+  titulo              String?   @db.VarChar(100)
+  status              Int       @default(1)
+  permassao           String?   @db.VarChar(5)
+}
+
+model verification_tokens {
+  token      String   @id @default("") @db.VarChar(150)
+  identifier String   @db.VarChar(150)
+  expires    DateTime @db.DateTime(0)
+}
+
+model visitas {
+  id         Int    @id @default(autoincrement())
+  parceiro   String @db.VarChar(150)
+  nome       String @db.VarChar(150)
+  email      String @db.VarChar(150)
+  telefone   String @db.VarChar(150)
+  endereco   String @db.VarChar(150)
+  observacao String @db.VarChar(150)
+}
+
+model voucher {
+  id         Int    @id @default(autoincrement())
+  voucher    String @db.VarChar(150)
+  estatos    String @db.VarChar(150)
+  dt_resgate Int
+  id_fcw     String @db.VarChar(150)
+}

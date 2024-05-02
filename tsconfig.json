@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./produt"
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./node_modules", "./.git", "./.vscode", "src/type"],
+  "ts-node": {
+    "transpileOnly": true
+  }
+}
