@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=prod node -r dotenv/config ./produt/server.js",
+    "start": "NODE_ENV=prod node -r dotenv/config ./produt/index.js",
     "dev": "NODE_ENV=dev ts-node-dev -r dotenv/config ./src/index.ts",
     "build": "tsc",
     "lint": "eslint src --ext .ts",
