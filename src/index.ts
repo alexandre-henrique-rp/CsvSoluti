@@ -26,25 +26,7 @@ app.use(cors());
 
 // Lista para armazenar os clientes conectados para receber atualizações
 const clients = [];
-
-// Endpoint para lidar com solicitações de clientes para receber atualizações de progresso
-app.get('/progress-updates', (req, res) => {
-  // Defina o cabeçalho para indicar que este endpoint suporta SSE
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-
-  // Mantenha a conexão aberta
-  res.flushHeaders();
-
-  // Adicione o cliente à lista de clientes conectados
-  clients.push(res);
-
-  // Remova o cliente da lista quando a conexão for fechada
-  req.on('close', () => {
-    clients.splice(clients.indexOf(res), 1);
-  });
-});
+let retono: number = 0;
 
 // Rota para lidar com a requisição POST contendo o arquivo CSV
 app.post('/upload-csv', (req, res) => {
@@ -52,9 +34,6 @@ app.post('/upload-csv', (req, res) => {
   if (!req.body) {
     return res.status(400).send('Nenhum arquivo CSV enviado.');
   }
-
-  // Responda imediatamente com um código de status 200 OK
-  res.status(200).send('Arquivo CSV recebido com sucesso. Processamento em andamento.');
 
   // Converta o corpo da requisição em uma string
   let csvData = '';
@@ -77,6 +56,8 @@ app.post('/upload-csv', (req, res) => {
         jsonData.push(row);
       })
       .on('end', async () => {
+        // Responda imediatamente com um código de status 200 OK
+        res.status(200).send('Foram processados ' + jsonData.length + ' linhas.');
         // Iterar sobre os objetos JSON resultantes
         let retono: number = 0;
         for (const obj of jsonData) {
@@ -112,11 +93,6 @@ app.post('/upload-csv', (req, res) => {
             }
             const update = await ClientUpdate(client[0].id, Dados);
             if (update) retono++
-            // Calcule o progresso como uma porcentagem
-            const progress = Math.floor((retono / jsonData.length) * 100);
-
-            // Envie atualizações de progresso para os clientes conectados
-            sendProgressUpdate({ progress });
 
           } else {
             let Dados: DataUpdate = {};
@@ -147,12 +123,6 @@ app.post('/upload-csv', (req, res) => {
             }
             const update = await ClientUpdate(Number(referencia), Dados);
             if (update) retono++
-
-            // Calcule o progresso como uma porcentagem
-            const progress = Math.floor((retono / jsonData.length) * 100);
-
-            // Envie atualizações de progresso para os clientes conectados
-            sendProgressUpdate({ progress });
           }
         }
 
@@ -206,28 +176,6 @@ async function ClientUpdate(id: number, data: DataUpdate) {
     return UpdateCliente
   } catch (error) {
     throw error
-  }
-}
-
-// Função para enviar atualizações de progresso para todos os clientes conectados
-function sendProgressUpdate(progress: any) {
-  const data = `data: ${JSON.stringify(progress)}\n\n`;
-
-  // Verificar se o progresso é 100%
-  if (progress.progress === 100) {
-    // Encerrar a conexão para indicar que o processamento foi concluído
-    clients.forEach(client => {
-      client.write(data);
-      client.end();
-    });
-
-    // Limpar a lista de clientes, pois todas as conexões foram encerradas
-    clients.length = 0;
-  } else {
-    // Caso contrário, enviar atualizações de progresso para os clientes conectados
-    clients.forEach(client => {
-      client.write(data);
-    });
   }
 }
 
