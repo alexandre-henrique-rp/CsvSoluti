@@ -68,6 +68,7 @@ app.post('/upload-csv', (req, res) => {
             const referencia = obj.referenciaExt.slice(2);
 
             const client = await verifiqueVoucher(referencia);
+            console.log(obj.id)
             if (obj.id) {
               Dados.id_fcw_soluti = obj.id;
             }
@@ -98,6 +99,7 @@ app.post('/upload-csv', (req, res) => {
             let Dados: DataUpdate = {};
             const referencia = obj.referenciaExt.split(':')[1];
 
+            console.log(obj.id)
             if (obj.id) {
               Dados.id_fcw_soluti = obj.id;
             }
