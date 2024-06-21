@@ -21,29 +21,13 @@ app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)());
 // Lista para armazenar os clientes conectados para receber atualizações
 const clients = [];
-// Endpoint para lidar com solicitações de clientes para receber atualizações de progresso
-app.get('/progress-updates', (req, res) => {
-    // Defina o cabeçalho para indicar que este endpoint suporta SSE
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    // Mantenha a conexão aberta
-    res.flushHeaders();
-    // Adicione o cliente à lista de clientes conectados
-    clients.push(res);
-    // Remova o cliente da lista quando a conexão for fechada
-    req.on('close', () => {
-        clients.splice(clients.indexOf(res), 1);
-    });
-});
+let retono = 0;
 // Rota para lidar com a requisição POST contendo o arquivo CSV
 app.post('/upload-csv', (req, res) => {
     // Verifique se o corpo da requisição contém o arquivo CSV
     if (!req.body) {
         return res.status(400).send('Nenhum arquivo CSV enviado.');
     }
-    // Responda imediatamente com um código de status 200 OK
-    res.status(200).send('Arquivo CSV recebido com sucesso. Processamento em andamento.');
     // Converta o corpo da requisição em uma string
     let csvData = '';
     req.on('data', (chunk) => {
@@ -62,6 +46,10 @@ app.post('/upload-csv', (req, res) => {
             jsonData.push(row);
         })
             .on('end', async () => {
+            // Responda imediatamente com um código de status 200 OK
+            res
+                .status(200)
+                .send('Foram processados ' + jsonData.length + ' linhas.');
             // Iterar sobre os objetos JSON resultantes
             let retono = 0;
             for (const obj of jsonData) {
@@ -69,8 +57,12 @@ app.post('/upload-csv', (req, res) => {
                     let Dados = {};
                     const referencia = obj.referenciaExt.slice(2);
                     const client = await verifiqueVoucher(referencia);
+                    console.log(obj.id);
                     if (obj.id) {
                         Dados.id_fcw_soluti = obj.id;
+                    }
+                    if (obj.solicitacao) {
+                        Dados.vouchersoluti = obj.solicitacao.split(' ')[0];
                     }
                     if (obj.dataAprovacao) {
                         Dados.dt_aprovacao = new Date(obj.dataAprovacao);
@@ -78,31 +70,113 @@ app.post('/upload-csv', (req, res) => {
                     if (obj.videoconferencia === 'Sim') {
                         Dados.validacao = 'VIDEO CONF';
                     }
+                    if (obj.certificado.includes('PJ A1 V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 1));
+                        }
+                    }
+                    if (obj.certificado.includes('PJ A3 V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 3));
+                        }
+                    }
+                    if (obj.certificado.includes('PF A1 V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 1));
+                            Dados.tipocd = 'A1PF';
+                        }
+                    }
+                    if (obj.certificado.includes('PF A3 V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 3));
+                        }
+                    }
+                    if (obj.certificado.includes('PJ A3 - 2 anos V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 2));
+                        }
+                    }
+                    if (obj.certificado.includes('PF A3 - 2 anos V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 2));
+                        }
+                    }
+                    if (obj.certificado.includes('PF A3 - 1 ano V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 1));
+                        }
+                    }
+                    if (obj.certificado.includes('PJ A3 - 1 ano V5')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 1));
+                        }
+                    }
+                    if (obj.certificado.includes('Bird ID')) {
+                        if (obj.validade) {
+                            Dados.vctoCD = new Date(obj.validade);
+                        }
+                        else {
+                            const aprovacao = new Date(obj.dataAprovacao);
+                            Dados.vctoCD = new Date(aprovacao.setFullYear(aprovacao.getFullYear() + 5));
+                        }
+                    }
                     if (obj.emissaoOnline === 'Sim') {
-                        Dados.validacao = 'EMISAO_ONLINE';
+                        Dados.validacao = 'EMISSAO_ONLINE';
                     }
                     if (obj.situacao) {
-                        if (obj.situacao[0] === '3') {
+                        if (obj.situacao.match(/\d+/)[0] == 3) {
                             Dados.andamento = 'APROVADO';
                         }
-                        if (obj.situacao[0] === '4') {
+                        if (obj.situacao.match(/\d+/)[0] == 4) {
                             Dados.andamento = 'EMITIDO';
                         }
-                        if (obj.situacao[0] === '5') {
+                        if (obj.situacao.match(/\d+/)[0] == 5) {
                             Dados.andamento = 'REVOGADO';
                         }
                     }
                     const update = await ClientUpdate(client[0].id, Dados);
+                    if (update.id == 29155) {
+                        console.log('🚀 ~ .on ~ update:', update);
+                    }
                     if (update)
                         retono++;
-                    // Calcule o progresso como uma porcentagem
-                    const progress = Math.floor((retono / jsonData.length) * 100);
-                    // Envie atualizações de progresso para os clientes conectados
-                    sendProgressUpdate({ progress });
                 }
                 else {
                     let Dados = {};
                     const referencia = obj.referenciaExt.split(':')[1];
+                    console.log(obj.id);
                     if (obj.id) {
                         Dados.id_fcw_soluti = obj.id;
                     }
@@ -116,23 +190,22 @@ app.post('/upload-csv', (req, res) => {
                         Dados.validacao = 'EMISAO_ONLINE';
                     }
                     if (obj.situacao) {
-                        if (obj.situacao[0] === '3') {
+                        if (obj.situacao.match(/\d+/)[0] == 3) {
                             Dados.andamento = 'APROVADO';
                         }
-                        if (obj.situacao[0] === '4') {
+                        if (obj.situacao.match(/\d+/)[0] == 4) {
                             Dados.andamento = 'EMITIDO';
                         }
-                        if (obj.situacao[0] === '5') {
+                        if (obj.situacao.match(/\d+/)[0] == 5) {
                             Dados.andamento = 'REVOGADO';
                         }
                     }
                     const update = await ClientUpdate(Number(referencia), Dados);
+                    if (update.id == 29155) {
+                        console.log('🚀 ~ .on ~ update:', update);
+                    }
                     if (update)
                         retono++;
-                    // Calcule o progresso como uma porcentagem
-                    const progress = Math.floor((retono / jsonData.length) * 100);
-                    // Envie atualizações de progresso para os clientes conectados
-                    sendProgressUpdate({ progress });
                 }
             }
             deletarArquivosAntigos('./uploads');
@@ -150,13 +223,13 @@ async function verifiqueVoucher(voucher) {
     try {
         const getCliente = await prisma.fcweb.findMany({
             where: {
-                vouchersoluti: voucher
+                vouchersoluti: voucher,
             },
             select: {
                 id: true,
                 andamento: true,
                 nome: true,
-            }
+            },
         });
         return getCliente;
     }
@@ -168,7 +241,7 @@ async function ClientUpdate(id, data) {
     try {
         const UpdateCliente = await prisma.fcweb.update({
             where: {
-                id: id
+                id: id,
             },
             data: data,
             select: {
@@ -177,33 +250,13 @@ async function ClientUpdate(id, data) {
                 nome: true,
                 validacao: true,
                 dt_aprovacao: true,
-                id_fcw_soluti: true
-            }
+                id_fcw_soluti: true,
+            },
         });
         return UpdateCliente;
     }
     catch (error) {
         throw error;
-    }
-}
-// Função para enviar atualizações de progresso para todos os clientes conectados
-function sendProgressUpdate(progress) {
-    const data = `data: ${JSON.stringify(progress)}\n\n`;
-    // Verificar se o progresso é 100%
-    if (progress.progress === 100) {
-        // Encerrar a conexão para indicar que o processamento foi concluído
-        clients.forEach(client => {
-            client.write(data);
-            client.end();
-        });
-        // Limpar a lista de clientes, pois todas as conexões foram encerradas
-        clients.length = 0;
-    }
-    else {
-        // Caso contrário, enviar atualizações de progresso para os clientes conectados
-        clients.forEach(client => {
-            client.write(data);
-        });
     }
 }
 function deletarArquivosAntigos(diretorio) {
@@ -226,7 +279,7 @@ function deletarArquivosAntigos(diretorio) {
                 if (agora.getTime() - dataCriacao.getTime() > noventaDiasEmMS) {
                     console.log('Arquivo antigo encontrado:', arquivo);
                     // Excluir o arquivo permanentemente
-                    fs_1.default.unlink(caminhoCompleto, err => {
+                    fs_1.default.unlink(caminhoCompleto, (err) => {
                         if (err) {
                             console.error('Erro ao excluir o arquivo:', caminhoCompleto, err);
                         }
