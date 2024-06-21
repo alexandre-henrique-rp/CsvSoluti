@@ -3,6 +3,7 @@ import axios from 'axios';
 const WhatsApp = {
   sendText: async (tel: string, msg: string) => {
     try {
+      const token = process.env.WHATSAPP_TOKEN;
       const response = await axios.post(
         `https://api.inovstar.com/core/v2/api/chats/send-text`,
         {
@@ -13,7 +14,7 @@ const WhatsApp = {
         },
         {
           headers: {
-            'access-token': '60de0c8bb0012f1e6ac5546b',
+            'access-token': token,
             'Content-Type': 'application/json',
           },
         },

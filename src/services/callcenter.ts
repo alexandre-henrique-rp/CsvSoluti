@@ -93,8 +93,8 @@ export const CallCenter = (data: Data[]) => {
 </body>
 </html>`;
 
-  // (async() => {
-  //   await EmailSend(EmailSendText);
-  // })();
+  (async() => {
+    await EmailSend(EmailSendText);
+  })();
 
 };

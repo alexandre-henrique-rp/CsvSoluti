@@ -2,13 +2,14 @@ import nodemailer from "nodemailer";
 
 export const EmailSend = async ( email: string) => {
   try {
+    const emailPassword = process.env.EMAIL_PASSWORD;
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
       secure: true,
       auth: {
         user: 'redebrasilrp@gmail.com',
-        pass: 'qhwp rkii sses ezwm',
+        pass: emailPassword,
       },
       tls: {
         rejectUnauthorized: false,

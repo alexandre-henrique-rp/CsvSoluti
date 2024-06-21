@@ -72,7 +72,7 @@ app.post('/upload-csv', upload.single('file'), (req, res) => {
           if (obj.referenciaExt[0] === 'V') {
             let Dados: DataUpdate = {};
             const referencia = obj.referenciaExt.split('-')[1];
-            const request  = await verifiqueVoucher(referencia);
+            const request = await verifiqueVoucher(referencia);
             const [client] = request;
             if (client) {
               if (obj.id) {
@@ -197,7 +197,6 @@ app.post('/upload-csv', upload.single('file'), (req, res) => {
               const update = await ClientUpdate(client?.id, Dados);
               if (update) retono++;
             } else {
-              
               error.push({
                 status: obj.status,
                 voucher: referencia,
@@ -205,37 +204,37 @@ app.post('/upload-csv', upload.single('file'), (req, res) => {
                 telefone: obj.telefone,
                 dataAprovacao: new Date(obj.dataAprovacao).toISOString(),
                 produto: obj.extProdutoNome,
-                agr: obj.usuario
+                agr: obj.usuario,
               });
             }
           } else {
-                let Dados: DataUpdate = {};
-                const referencia = obj.referenciaExt.split(':')[1];
-                if (obj.id) {
-                  Dados.id_fcw_soluti = obj.id;
-                }
-                if (obj.dataAprovacao) {
-                  Dados.dt_aprovacao = new Date(obj.dataAprovacao);
-                }
-                if (obj.videoconferencia === 'Sim') {
-                  Dados.validacao = 'VIDEO CONF';
-                }
-                if (obj.emissaoOnline === 'Sim') {
-                  Dados.validacao = 'EMISAO_ONLINE';
-                }
-                if (obj.situacao) {
-                  if (obj.situacao.match(/\d+/)[0] == 3) {
-                    Dados.andamento = 'APROVADO';
-                  }
-                  if (obj.situacao.match(/\d+/)[0] == 4) {
-                    Dados.andamento = 'EMITIDO';
-                  }
-                  if (obj.situacao.match(/\d+/)[0] == 5) {
-                    Dados.andamento = 'REVOGADO';
-                  }
-                }
-                const update = await ClientUpdate(Number(referencia), Dados);
-                if (update) retono++;
+            let Dados: DataUpdate = {};
+            const referencia = obj.referenciaExt.split(':')[1];
+            if (obj.id) {
+              Dados.id_fcw_soluti = obj.id;
+            }
+            if (obj.dataAprovacao) {
+              Dados.dt_aprovacao = new Date(obj.dataAprovacao);
+            }
+            if (obj.videoconferencia === 'Sim') {
+              Dados.validacao = 'VIDEO CONF';
+            }
+            if (obj.emissaoOnline === 'Sim') {
+              Dados.validacao = 'EMISAO_ONLINE';
+            }
+            if (obj.situacao) {
+              if (obj.situacao.match(/\d+/)[0] == 3) {
+                Dados.andamento = 'APROVADO';
+              }
+              if (obj.situacao.match(/\d+/)[0] == 4) {
+                Dados.andamento = 'EMITIDO';
+              }
+              if (obj.situacao.match(/\d+/)[0] == 5) {
+                Dados.andamento = 'REVOGADO';
+              }
+            }
+            const update = await ClientUpdate(Number(referencia), Dados);
+            if (update) retono++;
           }
         }
 
@@ -271,7 +270,24 @@ async function verifiqueVoucher(voucher: string) {
     });
     return getCliente;
   } catch (error) {
-    throw error;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const logFileName = `error_log_perquisa_${timestamp}.json`;
+    const logFilePath = `erros/${logFileName}`;
+
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      message: error.message,
+      stack: error.stack, // Inclui o stack trace para mais detalhes do erro
+      error: error,
+    };
+    // Cria o arquivo de log JSON e salva o objeto de erro
+    fs.writeFile(logFilePath, JSON.stringify(errorLog, null, 2), (err) => {
+      if (err) {
+        console.error('Erro ao salvar o log:', err);
+      } else {
+        console.log('Log de erro salvo com sucesso:', logFileName);
+      }
+    });
   }
 }
 async function ClientUpdate(id: number, data: DataUpdate) {
@@ -292,7 +308,24 @@ async function ClientUpdate(id: number, data: DataUpdate) {
     });
     return UpdateCliente;
   } catch (error) {
-    throw error;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const logFileName = `error_log_Update_${timestamp}.json`;
+    const logFilePath = `erros/${logFileName}`;
+
+    const errorLog = {
+      timestamp: new Date().toISOString(),
+      message: error.message,
+      stack: error.stack, // Inclui o stack trace para mais detalhes do erro
+      error: error,
+    };
+    // Cria o arquivo de log JSON e salva o objeto de erro
+    fs.writeFile(logFilePath, JSON.stringify(errorLog, null, 2), (err) => {
+      if (err) {
+        console.error('Erro ao salvar o log:', err);
+      } else {
+        console.log('Log de erro salvo com sucesso:', logFileName);
+      }
+    });
   }
 }
 
